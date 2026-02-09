@@ -1,0 +1,160 @@
+/* ================== CONTENEDOR ================== */
+
+.login-container {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f8ff;
+}
+
+/* ================== CARD ================== */
+
+.login-card {
+  background-color: #ffffff;
+  padding: 36px;
+  width: 100%;
+  max-width: 400px;
+
+  border-radius: 16px;
+  color: #0033A0;
+
+  box-shadow: 0 16px 40px rgba(0, 51, 160, 0.12);
+}
+
+/* ================== TITULOS ================== */
+
+.login-card h2 {
+  margin-bottom: 6px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.login-card p {
+  font-size: 14px;
+  color: #5f6f9f;
+}
+
+/* ================== ERROR MESSAGE ================== */
+
+.error-message {
+  background-color: #ffe5e5;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 16px;
+  border: 1px solid #ffcdd2;
+}
+
+/* ================== FORM ================== */
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.login-card input {
+  padding: 12px 14px;
+  border-radius: 10px;
+
+  border: 1px solid #d6defa;
+  outline: none;
+
+  font-size: 14px;
+  color: #0033A0;
+  background-color: #f9fbff;
+
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-card select {
+  padding: 12px 14px;
+  border-radius: 10px;
+
+  border: 1px solid #d6defa;
+  outline: none;
+
+  font-size: 14px;
+  color: #0033A0;
+  background-color: #f9fbff;
+
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-card select:focus {
+  border-color: #2D6DF6;
+  box-shadow: 0 0 0 3px rgba(45, 109, 246, 0.15);
+}
+
+.login-card input::placeholder {
+  color: #8a98c9;
+}
+
+.login-card input:focus {
+  border-color: #2D6DF6;
+  box-shadow: 0 0 0 3px rgba(45, 109, 246, 0.15);
+}
+
+.login-card input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================== BOTON ================== */
+
+.login-card button {
+  margin-top: 6px;
+
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+
+  background-color: #2D6DF6;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.login-card button:hover:not(:disabled) {
+  background-color: #0033A0;
+  box-shadow: 0 6px 16px rgba(0, 51, 160, 0.25);
+}
+
+.login-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================== DIVIDER ================== */
+
+.divider {
+  display: block;
+  height: 1px;
+  background-color: #e0e6f8;
+  margin: 28px 0;
+}
+
+/* ================== REGISTER ================== */
+
+.register-text {
+  font-size: 14px;
+  text-align: center;
+  color: #5f6f9f;
+}
+
+.register-text a {
+  color: #2D6DF6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-text a:hover {
+  text-decoration: underline;
+}

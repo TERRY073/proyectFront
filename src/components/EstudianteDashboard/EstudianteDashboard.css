@@ -1,0 +1,81 @@
+.estudiante-dashboard {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.dash-header {
+  margin-bottom: 20px;
+}
+
+.dash-header h2 {
+  font-size: 26px;
+  color: #0033A0;
+  margin: 0 0 6px 0;
+}
+
+.dash-header p {
+  margin: 0;
+  color: #5f6f9f;
+  font-size: 14px;
+}
+
+.dash-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #8a98c9;
+}
+
+.dash-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #e5e8f2;
+  box-shadow: 0 10px 24px rgba(0, 51, 160, 0.08);
+}
+
+.dash-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #0033A0;
+}
+
+.dash-subtitle {
+  margin: 0 0 18px 0;
+  font-size: 13px;
+  color: #5f6f9f;
+}
+
+.vars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.var-item {
+  padding: 14px;
+  border-radius: 12px;
+  background: #f9fbff;
+  border: 1px solid #d6defa;
+}
+
+.var-name {
+  font-weight: 600;
+  color: #0033A0;
+  margin-bottom: 6px;
+}
+
+.var-type {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e7efff;
+  color: #2D6DF6;
+  margin-bottom: 6px;
+}
+
+.var-desc {
+  font-size: 12px;
+  color: #5f6f9f;
+}
