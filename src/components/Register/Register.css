@@ -1,42 +1,50 @@
-/* ================== CONTENEDOR ================== */
+:root {
+  --ink: #0f172a;
+  --muted: #64748b;
+  --accent: #1d4ed8;
+  --accent-dark: #1e40af;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --line: #dbe4f0;
+  --sun: #fff300;
+  --shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  --radius: 18px;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+}
 
 .register-container {
   min-height: calc(100vh - 56px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f5f8ff;
+  display: grid;
+  place-items: center;
+  background-color: #f5f7fb;
+  font-family: var(--font-body);
+  padding: 24px;
 }
-
-/* ================== CARD ================== */
 
 .register-card {
-  background-color: #ffffff;
+  background-color: var(--surface);
   padding: 36px;
   width: 100%;
-  max-width: 420px;
-
-  border-radius: 16px;
-  color: #0033A0;
-
-  box-shadow: 0 16px 40px rgba(0, 51, 160, 0.12);
+  max-width: 460px;
+  border-radius: var(--radius);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
-
-/* ================== TITULOS ================== */
 
 .register-card h2 {
   margin-bottom: 6px;
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-display);
 }
 
 .register-card p {
   font-size: 14px;
-  color: #5f6f9f;
+  color: var(--muted);
   margin-bottom: 24px;
 }
-
-/* ================== FORM ================== */
 
 .register-card form {
   display: flex;
@@ -44,69 +52,55 @@
   gap: 14px;
 }
 
-/* INPUTS & SELECT */
-
 .register-card input,
 .register-card select {
   padding: 12px 14px;
-  border-radius: 10px;
-
-  border: 1px solid #d6defa;
+  border-radius: 12px;
+  border: 1px solid var(--line);
   outline: none;
-
   font-size: 14px;
-  color: #0033A0;
-  background-color: #f9fbff;
-
+  color: var(--ink);
+  background-color: var(--surface-alt);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .register-card input::placeholder {
-  color: #8a98c9;
+  color: var(--muted);
 }
 
 .register-card input:focus,
 .register-card select:focus {
-  border-color: #2D6DF6;
-  box-shadow: 0 0 0 3px rgba(45, 109, 246, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
 }
-
-/* ================== ADMIN WARNING ================== */
 
 .admin-warning {
   font-size: 13px;
-  background-color: #fff4e5;
-  color: #9c5a00;
+  background-color: var(--sun);
+  color: #5b4c00;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #ffd9a0;
+  border: 1px solid #e6da00;
 }
-
-/* ================== BOTON ================== */
 
 .register-card button {
   margin-top: 6px;
-
   padding: 12px;
   border-radius: 999px;
   border: none;
-
-  background-color: #2D6DF6;
+  background-color: var(--accent);
   color: #ffffff;
-
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .register-card button:hover {
-  background-color: #0033A0;
-  box-shadow: 0 6px 16px rgba(0, 51, 160, 0.25);
+  background-color: var(--accent-dark);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+  transform: translateY(-1px);
 }
-
-/* ================== DIVIDER ================== */
 
 .divider {
   display: block;
@@ -115,20 +109,24 @@
   margin: 28px 0;
 }
 
-/* ================== LOGIN LINK ================== */
-
 .login-text {
   font-size: 14px;
   text-align: center;
-  color: #5f6f9f;
+  color: var(--muted);
 }
 
 .login-text a {
-  color: #2D6DF6;
+  color: var(--accent);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .login-text a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .register-card {
+    padding: 24px;
+  }
 }

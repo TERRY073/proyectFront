@@ -1,79 +1,76 @@
-/* ================== CONTAINER ================== */
+:root {
+  --ink: #0f172a;
+  --muted: #64748b;
+  --accent: #1d4ed8;
+  --accent-dark: #1e40af;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --line: #dbe4f0;
+  --sun: #fff300;
+  --shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  --radius: 16px;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+}
 
 .tomar-asistencia-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 24px;
+  font-family: var(--font-body);
+  color: var(--ink);
 }
 
-/* ================== HEADER ================== */
-
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .page-header h1 {
-  font-size: 28px;
-  font-weight: 600;
-  color: #0033A0;
+  font-size: 26px;
+  font-weight: 700;
+  font-family: var(--font-display);
   margin: 0 0 4px 0;
 }
 
 .page-header p {
   font-size: 14px;
-  color: #5f6f9f;
+  color: var(--muted);
   margin: 0;
 }
 
 .page-note {
   margin-top: 6px;
   font-size: 12px;
-  color: #8a98c9;
+  color: var(--muted);
 }
-
-/* ================== MENSAJES ================== */
 
 .mensaje-alert {
   padding: 14px 18px;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 24px;
   font-size: 14px;
-  font-weight: 500;
-  animation: slideDown 0.3s ease-out;
+  font-weight: 600;
 }
 
 .mensaje-alert.success {
-  background-color: #E8F5E9;
-  color: #2E7D32;
-  border: 1px solid #A5D6A7;
+  background-color: #e6fbf1;
+  color: #056347;
+  border: 1px solid #b9f3dc;
 }
 
 .mensaje-alert.error {
-  background-color: #FFEBEE;
-  color: #C62828;
-  border: 1px solid #EF9A9A;
+  background-color: #fff0f0;
+  color: #b91c1c;
+  border: 1px solid #ffd1d9;
 }
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ================== SELECCIÓN ================== */
 
 .seleccion-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 22px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 51, 160, 0.08);
-  border: 1px solid #e5e8f2;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .seleccion-grid {
@@ -92,33 +89,24 @@
 .campo-group label {
   font-size: 13px;
   font-weight: 600;
-  color: #0033A0;
+  color: var(--ink);
 }
 
 .campo-group select,
 .campo-group input {
   padding: 10px 12px;
-  border: 1px solid #d6defa;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   font-size: 14px;
-  color: #0033A0;
-  background-color: #f9fbff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  color: var(--ink);
+  background-color: var(--surface-alt);
 }
 
-.campo-group select:focus,
-.campo-group input:focus {
-  outline: none;
-  border-color: #2D6DF6;
-  box-shadow: 0 0 0 3px rgba(45, 109, 246, 0.15);
-}
-
-/* INFO DEL CURSO */
 .curso-info {
   display: flex;
   gap: 24px;
   padding-top: 16px;
-  border-top: 1px solid #e5e8f2;
+  border-top: 1px solid var(--line);
 }
 
 .info-item {
@@ -128,16 +116,14 @@
 }
 
 .info-label {
-  color: #5f6f9f;
-  font-weight: 500;
-}
-
-.info-value {
-  color: #0033A0;
+  color: var(--muted);
   font-weight: 600;
 }
 
-/* ================== ESTADÍSTICAS MINI ================== */
+.info-value {
+  color: var(--ink);
+  font-weight: 700;
+}
 
 .stats-mini {
   display: grid;
@@ -147,65 +133,42 @@
 }
 
 .stat-mini {
-  background: #ffffff;
-  border-radius: 10px;
+  background: var(--surface);
+  border-radius: 12px;
   padding: 16px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0, 51, 160, 0.06);
-  border: 2px solid transparent;
-}
-
-.stat-mini.presente {
-  border-color: #4CAF50;
-}
-
-.stat-mini.ausente {
-  border-color: #F44336;
-}
-
-.stat-mini.tardanza {
-  border-color: #FF9800;
-}
-
-.stat-mini.total {
-  border-color: #2D6DF6;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .stat-mini strong {
   display: block;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
-.stat-mini.presente strong { color: #4CAF50; }
-.stat-mini.ausente strong { color: #F44336; }
-.stat-mini.tardanza strong { color: #FF9800; }
-.stat-mini.total strong { color: #2D6DF6; }
-
 .stat-mini span {
   font-size: 12px;
-  color: #5f6f9f;
+  color: var(--muted);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.5px;
 }
 
-/* ================== ACCIONES RÁPIDAS ================== */
-
 .acciones-rapidas {
-  background: #ffffff;
-  border-radius: 12px;
+  background: var(--surface);
+  border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 51, 160, 0.08);
-  border: 1px solid #e5e8f2;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .acciones-rapidas h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #0033A0;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-display);
   margin: 0 0 12px 0;
 }
 
@@ -217,48 +180,37 @@
 .btn-accion {
   flex: 1;
   padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  background: var(--surface-alt);
   transition: all 0.2s;
 }
 
 .btn-accion.presente {
-  background-color: #E8F5E9;
-  color: #2E7D32;
-}
-
-.btn-accion.presente:hover {
-  background-color: #4CAF50;
-  color: #ffffff;
+  color: #056347;
+  background: #e6fbf1;
 }
 
 .btn-accion.ausente {
-  background-color: #FFEBEE;
-  color: #C62828;
+  color: #b91c1c;
+  background: #fff0f0;
 }
-
-.btn-accion.ausente:hover {
-  background-color: #F44336;
-  color: #ffffff;
-}
-
-/* ================== LISTA DE ESTUDIANTES ================== */
 
 .estudiantes-card {
-  background: #ffffff;
-  border-radius: 12px;
+  background: var(--surface);
+  border-radius: var(--radius);
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 51, 160, 0.08);
-  border: 1px solid #e5e8f2;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .estudiantes-card h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #0033A0;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-display);
   margin: 0 0 20px 0;
 }
 
@@ -270,19 +222,14 @@
 }
 
 .estudiante-item {
-  background: #f9fbff;
-  border: 1px solid #e5e8f2;
-  border-radius: 10px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  transition: border-color 0.2s;
-}
-
-.estudiante-item:hover {
-  border-color: #2D6DF6;
 }
 
 .estudiante-info {
@@ -292,13 +239,13 @@
 .estudiante-nombre {
   font-size: 15px;
   font-weight: 600;
-  color: #0033A0;
+  color: var(--ink);
   margin-bottom: 4px;
 }
 
 .estudiante-cedula {
   font-size: 13px;
-  color: #5f6f9f;
+  color: var(--muted);
 }
 
 .estudiante-acciones {
@@ -308,7 +255,6 @@
   align-items: center;
 }
 
-/* BOTONES DE ESTADO */
 .estado-buttons {
   display: flex;
   gap: 6px;
@@ -317,154 +263,68 @@
 .btn-estado {
   width: 40px;
   height: 40px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: bold;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
   background-color: #ffffff;
-}
-
-.btn-estado.presente {
-  color: #4CAF50;
-  border-color: #E8F5E9;
-}
-
-.btn-estado.presente:hover {
-  background-color: #E8F5E9;
 }
 
 .btn-estado.presente.activo {
-  background-color: #4CAF50;
-  color: #ffffff;
-  border-color: #4CAF50;
-}
-
-.btn-estado.tardanza {
-  color: #FF9800;
-  border-color: #FFF4E5;
-}
-
-.btn-estado.tardanza:hover {
-  background-color: #FFF4E5;
+  background-color: #e6fbf1;
+  border-color: #b9f3dc;
 }
 
 .btn-estado.tardanza.activo {
-  background-color: #FF9800;
-  color: #ffffff;
-  border-color: #FF9800;
-}
-
-.btn-estado.ausente {
-  color: #F44336;
-  border-color: #FFEBEE;
-}
-
-.btn-estado.ausente:hover {
-  background-color: #FFEBEE;
+  background-color: #fff7cc;
+  border-color: #ffe48a;
 }
 
 .btn-estado.ausente.activo {
-  background-color: #F44336;
-  color: #ffffff;
-  border-color: #F44336;
-}
-
-.btn-estado.justificado {
-  color: #2196F3;
-  border-color: #E3F2FD;
-  font-size: 16px;
-}
-
-.btn-estado.justificado:hover {
-  background-color: #E3F2FD;
+  background-color: #fff0f0;
+  border-color: #ffd1d9;
 }
 
 .btn-estado.justificado.activo {
-  background-color: #2196F3;
-  color: #ffffff;
-  border-color: #2196F3;
+  background-color: #e0ebff;
+  border-color: #c7d7ff;
 }
 
-/* OBSERVACIONES */
 .observaciones-input {
   flex: 1;
   padding: 10px 12px;
-  border: 1px solid #d6defa;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   font-size: 13px;
-  color: #0033A0;
+  color: var(--ink);
   background-color: #ffffff;
-  transition: border-color 0.2s, box-shadow 0.2s;
 }
-
-.observaciones-input:focus {
-  outline: none;
-  border-color: #2D6DF6;
-  box-shadow: 0 0 0 3px rgba(45, 109, 246, 0.15);
-}
-
-.observaciones-input::placeholder {
-  color: #8a98c9;
-}
-
-/* ================== GUARDAR ================== */
 
 .guardar-section {
   display: flex;
   justify-content: flex-end;
   padding-top: 20px;
-  border-top: 1px solid #e5e8f2;
+  border-top: 1px solid var(--line);
 }
 
 .btn-guardar {
   padding: 12px 32px;
-  background: linear-gradient(135deg, #2D6DF6, #5b6cff);
+  background: var(--accent);
   color: #ffffff;
   border: none;
   border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(45, 109, 246, 0.3);
 }
 
-.btn-guardar:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0033A0, #2D6DF6);
-  box-shadow: 0 6px 20px rgba(45, 109, 246, 0.4);
-  transform: translateY(-2px);
-}
-
-.btn-guardar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ================== EMPTY STATE ================== */
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #5f6f9f;
-}
-
-.empty-state p {
-  font-size: 16px;
-}
-
-/* ================== LOADING ================== */
-
+.empty-state,
 .loading {
   text-align: center;
   padding: 60px 20px;
-  font-size: 18px;
-  color: #5f6f9f;
+  color: var(--muted);
 }
-
-/* ================== RESPONSIVE ================== */
 
 @media (max-width: 768px) {
   .tomar-asistencia-container {

@@ -1,11 +1,13 @@
 ﻿import React from 'react';
+import SectionPage from '../Asistencia/SectionPage';
 
 const Cursoservice = () => {
   return (
-    <section style={{ padding: '40px', textAlign: 'center' }}>
-      <h2>Cursos</h2>
-      <p>Próximamente...</p>
-    </section>
+    <SectionPage
+      title="Cursos"
+      subtitle="Administra la oferta académica y la asignación de grupos."
+      note="Módulo en construcción"
+    />
   );
 };
 

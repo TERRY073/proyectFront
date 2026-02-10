@@ -1,161 +1,631 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-import Navbar from './components/Navbar/Navbar';
-import Login from './components/Login/Login';
-import Register from './components/Register/Register';
-import MiAsistencia from './components/Miasistencia/MiAsistencia';
-import TomarAsistencia from './components/Tomarasistencia/Tomarasistencia';
-import SectionPage from './components/Asistencia/SectionPage';
-import { AuthProvider } from './context/AuthContext';
-import EstudianteDashboard from './components/EstudianteDashboard/EstudianteDashboard';
+import { useEffect, useMemo, useState } from 'react';
+import './App.css';
+import LogoSura from './assets/LogoSura.svg';
 
 export default function App() {
-  const [theme] = useState('light');
+  const [selectedRole, setSelectedRole] = useState('');
+  const [rolePanel, setRolePanel] = useState('');
+  const [activeRole, setActiveRole] = useState('');
+  const [view, setView] = useState('inicio');
+  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
+  const [mensaje, setMensaje] = useState('');
+  const [error, setError] = useState('');
+
+  const [asistencias, setAsistencias] = useState([]);
+  const [profesorTab, setProfesorTab] = useState('ver');
+  const [formProfesor, setFormProfesor] = useState({
+    estudiante: '',
+    clase: '',
+    materia: '',
+    dia: '',
+    asistio: false
+  });
+  const [filtrosEstudiante, setFiltrosEstudiante] = useState({
+    clase: '',
+    dia: '',
+    materia: ''
+  });
+
+  useEffect(() => {
+    const guardadas = localStorage.getItem('sura_asistencias_local');
+    if (guardadas) {
+      try {
+        setAsistencias(JSON.parse(guardadas));
+      } catch {
+        setAsistencias([]);
+      }
+    }
+
+    const rolActivo = localStorage.getItem('sura_active_role');
+    if (rolActivo) {
+      setActiveRole(rolActivo);
+      setSelectedRole(rolActivo);
+      setView('asistencias');
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const target = event.target;
+      if (target.closest('details')) return;
+
+      document
+        .querySelectorAll('details[open]')
+        .forEach((detail) => detail.removeAttribute('open'));
+      setRoleDropdownOpen(false);
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('sura_asistencias_local', JSON.stringify(asistencias));
+  }, [asistencias]);
+
+  const asistenciasFiltradas = useMemo(() => {
+    return asistencias.filter((item) => {
+      const claseOk =
+        !filtrosEstudiante.clase || item.clase === filtrosEstudiante.clase;
+      const diaOk = !filtrosEstudiante.dia || item.dia === filtrosEstudiante.dia;
+      const materiaOk =
+        !filtrosEstudiante.materia || item.materia === filtrosEstudiante.materia;
+      return claseOk && diaOk && materiaOk;
+    });
+  }, [asistencias, filtrosEstudiante]);
+
+  const handleRoleSelect = (rol) => {
+    setSelectedRole(rol);
+    setRolePanel((prev) => (prev === rol ? '' : rol));
+    setRoleDropdownOpen(true);
+    setMensaje('');
+    if (activeRole && activeRole !== rol) {
+      setMensaje(`Debes iniciar sesión como ${rol} para continuar.`);
+    }
+  };
+
+  const handleLogin = () => {
+    if (!selectedRole) {
+      setError('Selecciona un rol en "Elegir rol" para iniciar sesión.');
+      return;
+    }
+    setActiveRole(selectedRole);
+    localStorage.setItem('sura_active_role', selectedRole);
+    setView('asistencias');
+    setError('');
+    setMensaje(`Sesión iniciada como ${selectedRole}.`);
+    setRoleDropdownOpen(false);
+    setTimeout(() => setMensaje(''), 2500);
+  };
+
+  const handleLogout = () => {
+    setActiveRole('');
+    setSelectedRole('');
+    setRolePanel('');
+    setView('inicio');
+    localStorage.removeItem('sura_active_role');
+    setMensaje('Sesión cerrada.');
+    setTimeout(() => setMensaje(''), 2000);
+  };
+
+  const handleChangeProfesor = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormProfesor((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const guardarAsistenciaLocal = (e) => {
+    e.preventDefault();
+    if (!formProfesor.estudiante || !formProfesor.clase || !formProfesor.materia) {
+      setError('Completa estudiante, clase y materia para guardar.');
+      return;
+    }
+    const nueva = {
+      id: Date.now(),
+      ...formProfesor
+    };
+    setAsistencias((prev) => [nueva, ...prev]);
+    setFormProfesor({
+      estudiante: '',
+      clase: '',
+      materia: '',
+      dia: '',
+      asistio: false
+    });
+    setError('');
+    setMensaje('Asistencia registrada localmente.');
+    setTimeout(() => setMensaje(''), 2500);
+  };
 
   return (
-    <AuthProvider>
-      <Router>
-        <div className={`app ${theme}`}>
-          {/* NAVBAR */}
-          <Navbar />
-
-          {/* CONTENIDO */}
-          <main className="app-main">
-            <Routes>
-              {/* HOME */}
-              <Route
-                path="/"
-                element={
-                  <section className="home">
-                    <div className="home-content">
-                      <div className="home-hero">
-                        <div className="home-text">
-                          <h1>Sistema de Gestion de Asistencia</h1>
-                          <p>
-                            Registro y consulta de asistencia academica con roles claros para
-                            estudiante, profesor y administrador.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                }
-              />
-
-              {/* AUTH */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-
-              {/* ADMINISTRADOR */}
-              <Route
-                path="/admin/dashboard-asistencia"
-                element={
-                  <SectionPage
-                    title="Dashboard de Asistencia"
-                    subtitle="Visión general del estado de asistencia a nivel global."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-              <Route
-                path="/admin/control-general"
-                element={
-                  <SectionPage
-                    title="Control General de Asistencias"
-                    subtitle="Monitorea registros y tendencias de asistencia."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-              <Route
-                path="/admin/reportes-globales"
-                element={
-                  <SectionPage
-                    title="Reportes Globales de Asistencia"
-                    subtitle="Reporte consolidado por periodos y sedes."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-              <Route
-                path="/admin/auditoria"
-                element={
-                  <SectionPage
-                    title="Auditoría de Registros de Asistencia"
-                    subtitle="Revisión y trazabilidad de cambios en asistencia."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-
-              {/* PROFESOR */}
-              <Route
-                path="/profesor/dashboard"
-                element={
-                  <SectionPage
-                    title="Dashboard"
-                    subtitle="Resumen rápido de tus clases y asistencia."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-              <Route
-                path="/profesor/mis-clases"
-                element={
-                  <SectionPage
-                    title="Mis Clases"
-                    subtitle="Clases asignadas para registro de asistencia."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-              <Route path="/profesor/registro-asistencia" element={<TomarAsistencia />} />
-              <Route
-                path="/profesor/historial-asistencias"
-                element={
-                  <SectionPage
-                    title="Historial de Asistencias"
-                    subtitle="Consulta asistencias previamente registradas."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-              <Route
-                path="/profesor/reporte-por-clase"
-                element={
-                  <SectionPage
-                    title="Reporte de Asistencia por Clase"
-                    subtitle="Reporte detallado por sesión y grupo."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-
-              {/* ESTUDIANTE */}
-              <Route
-                path="/estudiante/dashboard"
-                element={<EstudianteDashboard />}
-              />
-              <Route path="/estudiante/mi-asistencia" element={<MiAsistencia />} />
-              <Route
-                path="/estudiante/historial-asistencias"
-                element={
-                  <SectionPage
-                    title="Historial de Asistencias"
-                    subtitle="Detalle histórico de tus asistencias."
-                    note="Integración con API REST pendiente."
-                  />
-                }
-              />
-
-              {/* ALIAS */}
-              <Route path="/mi-asistencia" element={<MiAsistencia />} />
-              <Route path="/asistencia/tomar" element={<TomarAsistencia />} />
-            </Routes>
-          </main>
+    <div className="page">
+      <header className="topbar">
+        <div className="brand">
+          <span className="brand-badge">
+            <img src={LogoSura} alt="SURA" />
+          </span>
+          <div>
+            <span className="brand-title">Asistencia</span>
+            <span className="brand-subtitle">SURA Educación</span>
+          </div>
         </div>
-      </Router>
-    </AuthProvider>
+        <nav className="top-actions">
+          <details className="dropdown menu-dropdown">
+            <summary>Menú</summary>
+            <div className="dropdown-menu">
+              <button type="button" className="btn outline">
+                Usuarios
+              </button>
+              <button type="button" className="btn outline">
+                Profesor
+              </button>
+              <button type="button" className="btn outline">
+                Curso
+              </button>
+              <button type="button" className="btn outline">
+                Reporte
+              </button>
+              <button type="button" className="btn outline">
+                Notificación
+              </button>
+              <button type="button" className="btn outline">
+                Matrícula
+              </button>
+            </div>
+          </details>
+          <button type="button" className="btn outline">
+            Ir a inicio
+          </button>
+          <button
+            type="button"
+            className="btn outline"
+            onClick={() => {
+              if (!activeRole) {
+                setError('Debes iniciar sesión para ver asistencias.');
+                return;
+              }
+              setView('asistencias');
+              setError('');
+            }}
+          >
+            Asistencias registradas
+          </button>
+          {!activeRole ? (
+            <button
+              type="button"
+              className="btn primary"
+              onClick={() => {
+                setRoleDropdownOpen(true);
+                setView('inicio');
+              }}
+            >
+              Iniciar sesión
+            </button>
+          ) : (
+            <details className="dropdown user-dropdown">
+              <summary>{`Sesión: ${activeRole}`}</summary>
+              <div className="dropdown-menu">
+                <button type="button" className="btn outline" onClick={handleLogout}>
+                  Cerrar sesión
+                </button>
+                <button
+                  type="button"
+                  className="btn primary"
+                  onClick={() => setRolePanel('')}
+                >
+                  Cambiar rol
+                </button>
+              </div>
+            </details>
+          )}
+        </nav>
+      </header>
+
+      <section className="hero-row">
+        <div className="hero-copy">
+          <p className="hero-kicker">Panel de asistencia</p>
+          <h1>Visibilidad clara para docentes y estudiantes.</h1>
+          <p>
+            Registra, consulta y da seguimiento a la asistencia con filtros
+            simples y una experiencia lista para integrarse a tus módulos.
+          </p>
+          <div className="hero-actions">
+            <button
+              type="button"
+              className="btn primary"
+              onClick={() => {
+                if (!activeRole) {
+                  setError('Debes iniciar sesión para ver asistencias.');
+                  return;
+                }
+                setView('asistencias');
+                setError('');
+              }}
+            >
+              Ver asistencias
+            </button>
+            <button type="button" className="btn outline">
+              Explorar módulos
+            </button>
+          </div>
+          <div className="hero-stats">
+            <div>
+              <span>Flujo</span>
+              <strong>Por rol</strong>
+            </div>
+            <div>
+              <span>Consulta</span>
+              <strong>Rápida</strong>
+            </div>
+            <div>
+              <span>Integración</span>
+              <strong>Lista</strong>
+            </div>
+          </div>
+        </div>
+        <aside className="role-card">
+          <p className="role-title">Acceso por rol</p>
+          <p className="role-subtitle">
+            {activeRole
+              ? `Sesión activa: ${activeRole}.`
+              : 'Elige tu perfil y luego inicia sesión.'}
+          </p>
+          <details
+            className="dropdown role-dropdown"
+            open={roleDropdownOpen}
+            onToggle={(event) => setRoleDropdownOpen(event.currentTarget.open)}
+          >
+            <summary>Elegir rol</summary>
+            <div className="dropdown-menu">
+              <button
+                type="button"
+                className={`btn outline ${selectedRole === 'estudiante' ? 'active' : ''}`}
+                onClick={() => handleRoleSelect('estudiante')}
+              >
+                Estudiante
+              </button>
+              {rolePanel === 'estudiante' && (
+                <button type="button" className="btn primary" onClick={handleLogin}>
+                  Iniciar sesión como estudiante
+                </button>
+              )}
+              <button
+                type="button"
+                className={`btn outline ${selectedRole === 'profesor' ? 'active' : ''}`}
+                onClick={() => handleRoleSelect('profesor')}
+              >
+                Profesor
+              </button>
+              {rolePanel === 'profesor' && (
+                <button type="button" className="btn primary" onClick={handleLogin}>
+                  Iniciar sesión como profesor
+                </button>
+              )}
+            </div>
+          </details>
+          {activeRole && (
+            <button type="button" className="btn outline" onClick={handleLogout}>
+              Cerrar sesión
+            </button>
+          )}
+        </aside>
+      </section>
+
+      <section className="info-grid">
+        <article className="info-card highlight-card">
+          <h3>Asistencia con enfoque humano</h3>
+          <p>
+            Diseñado para equipos académicos que buscan claridad, orden y
+            continuidad en el acompañamiento educativo.
+          </p>
+          <div className="highlight-metrics">
+            <div className="metric">
+              <span>Enfoque</span>
+              <strong>Seguimiento real</strong>
+            </div>
+            <div className="metric">
+              <span>Objetivo</span>
+              <strong>Mejorar permanencia</strong>
+            </div>
+            <div className="metric">
+              <span>Uso</span>
+              <strong>Simple y directo</strong>
+            </div>
+          </div>
+        </article>
+        <article className="info-card">
+          <h3>Educación con propósito</h3>
+          <p>
+            Fundación SURA promueve la calidad de la educación y el desarrollo de
+            capacidades en directivos, docentes y estudiantes.
+          </p>
+        </article>
+        <article className="info-card">
+          <h3>Innovación en aula</h3>
+          <p>
+            Iniciativas como Félix y Susana y Cuantrix hacen parte de la línea
+            educativa y acompañan procesos en instituciones educativas.
+          </p>
+        </article>
+        <article className="info-card">
+          <h3>Continuidad y mejora</h3>
+          <p>
+            Edúcate con SURA ofrece rutas de aprendizaje y recursos para fortalecer
+            prácticas formativas y de bienestar.
+          </p>
+        </article>
+      </section>
+
+      <section className="benefits">
+        <article className="benefit">
+          <div className="benefit-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2">
+              <path d="M5 12l4 4L19 6" />
+            </svg>
+          </div>
+          <h4>Registro confiable</h4>
+          <p>Reduce errores manuales y facilita la trazabilidad por clase.</p>
+        </article>
+        <article className="benefit">
+          <div className="benefit-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2">
+              <path d="M4 6h16M4 12h16M4 18h10" />
+            </svg>
+          </div>
+          <h4>Consulta rápida</h4>
+          <p>Filtros por clase, día y materia para ver solo lo necesario.</p>
+        </article>
+        <article className="benefit">
+          <div className="benefit-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2">
+              <path d="M12 3v18M3 12h18" />
+            </svg>
+          </div>
+          <h4>Integración sencilla</h4>
+          <p>Estructura lista para conectarse con APIs y módulos externos.</p>
+        </article>
+      </section>
+
+      <main className="content">
+        {mensaje && <div className="alert success">{mensaje}</div>}
+        {error && <div className="alert error">{error}</div>}
+
+        {activeRole && view === 'asistencias' && (
+          <section className="modules">
+            {activeRole === 'estudiante' && (
+              <article className="module">
+                <header>
+                  <h2>Estudiante</h2>
+                  <p>Consulta tus asistencias registradas.</p>
+                </header>
+                <div className="filters">
+                  <label>
+                    Clase
+                    <select
+                      value={filtrosEstudiante.clase}
+                      onChange={(e) =>
+                        setFiltrosEstudiante((prev) => ({
+                          ...prev,
+                          clase: e.target.value
+                        }))
+                      }
+                    >
+                      <option value="">Todas</option>
+                      <option value="Matemáticas 1">Matemáticas 1</option>
+                      <option value="Lengua y Literatura">Lengua y Literatura</option>
+                      <option value="Programación Básica">Programación Básica</option>
+                    </select>
+                  </label>
+                  <label>
+                    Día
+                    <select
+                      value={filtrosEstudiante.dia}
+                      onChange={(e) =>
+                        setFiltrosEstudiante((prev) => ({
+                          ...prev,
+                          dia: e.target.value
+                        }))
+                      }
+                    >
+                      <option value="">Todos</option>
+                      <option value="Lunes">Lunes</option>
+                      <option value="Miércoles">Miércoles</option>
+                      <option value="Viernes">Viernes</option>
+                    </select>
+                  </label>
+                  <label>
+                    Materia
+                    <select
+                      value={filtrosEstudiante.materia}
+                      onChange={(e) =>
+                        setFiltrosEstudiante((prev) => ({
+                          ...prev,
+                          materia: e.target.value
+                        }))
+                      }
+                    >
+                      <option value="">Todas</option>
+                      <option value="Álgebra">Álgebra</option>
+                      <option value="Lenguaje">Lenguaje</option>
+                      <option value="Fundamentos">Fundamentos</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="module-body">
+                  <div className="card">
+                    <h3>Asistencias registradas</h3>
+                    <div className="table-wrap">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Estudiante</th>
+                            <th>Clase</th>
+                            <th>Materia</th>
+                            <th>Día</th>
+                            <th>Asistió</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {asistenciasFiltradas.length === 0 ? (
+                            <tr>
+                              <td colSpan="5" className="empty">
+                                No hay asistencias registradas.
+                              </td>
+                            </tr>
+                          ) : (
+                            asistenciasFiltradas.map((item) => (
+                              <tr key={item.id}>
+                                <td>{item.estudiante}</td>
+                                <td>{item.clase}</td>
+                                <td>{item.materia}</td>
+                                <td>{item.dia}</td>
+                                <td>{item.asistio ? 'Sí' : 'No'}</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            )}
+
+            {activeRole === 'profesor' && (
+              <article className="module">
+                <header>
+                  <h2>Profesor</h2>
+                  <p>Gestiona asistencias de tu clase.</p>
+                </header>
+                <div className="module-actions">
+                  <details className="dropdown">
+                    <summary>Acciones</summary>
+                    <div className="dropdown-menu">
+                      <button
+                        type="button"
+                        className={`btn primary ${
+                          profesorTab === 'asignar' ? 'active' : ''
+                        }`}
+                        onClick={() => setProfesorTab('asignar')}
+                      >
+                        Asignar asistencia
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn outline ${profesorTab === 'ver' ? 'active' : ''}`}
+                        onClick={() => setProfesorTab('ver')}
+                      >
+                        Ver asistencias
+                      </button>
+                    </div>
+                  </details>
+                </div>
+
+                {profesorTab === 'asignar' ? (
+                  <div className="module-body">
+                    <section className="card">
+                      <h3>Registrar asistencia (local)</h3>
+                      <form className="form" onSubmit={guardarAsistenciaLocal}>
+                        <label>
+                          Estudiante
+                          <input
+                            type="text"
+                            name="estudiante"
+                            value={formProfesor.estudiante}
+                            onChange={handleChangeProfesor}
+                            placeholder="Nombre del estudiante"
+                          />
+                        </label>
+                        <label>
+                          Clase
+                          <input
+                            type="text"
+                            name="clase"
+                            value={formProfesor.clase}
+                            onChange={handleChangeProfesor}
+                            placeholder="Ej: Matemáticas 1"
+                          />
+                        </label>
+                        <label>
+                          Materia
+                          <input
+                            type="text"
+                            name="materia"
+                            value={formProfesor.materia}
+                            onChange={handleChangeProfesor}
+                            placeholder="Ej: Álgebra"
+                          />
+                        </label>
+                        <label>
+                          Día
+                          <input
+                            type="text"
+                            name="dia"
+                            value={formProfesor.dia}
+                            onChange={handleChangeProfesor}
+                            placeholder="Ej: Lunes"
+                          />
+                        </label>
+                        <label className="checkbox">
+                          <input
+                            type="checkbox"
+                            name="asistio"
+                            checked={formProfesor.asistio}
+                            onChange={handleChangeProfesor}
+                          />
+                          Asistió
+                        </label>
+                        <button type="submit" className="btn primary">
+                          Guardar asistencia
+                        </button>
+                      </form>
+                    </section>
+                  </div>
+                ) : (
+                  <div className="module-body">
+                    <section className="card">
+                      <h3>Asistencias registradas</h3>
+                      <div className="table-wrap">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Estudiante</th>
+                              <th>Clase</th>
+                              <th>Materia</th>
+                              <th>Día</th>
+                              <th>Asistió</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {asistencias.length === 0 ? (
+                              <tr>
+                                <td colSpan="5" className="empty">
+                                  No hay asistencias registradas.
+                                </td>
+                              </tr>
+                            ) : (
+                              asistencias.map((item) => (
+                                <tr key={item.id}>
+                                  <td>{item.estudiante}</td>
+                                  <td>{item.clase}</td>
+                                  <td>{item.materia}</td>
+                                  <td>{item.dia}</td>
+                                  <td>{item.asistio ? 'Sí' : 'No'}</td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                )}
+              </article>
+            )}
+          </section>
+        )}
+      </main>
+    </div>
   );
 }

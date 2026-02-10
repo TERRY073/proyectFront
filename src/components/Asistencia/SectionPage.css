@@ -1,32 +1,67 @@
+:root {
+  --ink: #0f172a;
+  --muted: #64748b;
+  --accent: #1d4ed8;
+  --accent-dark: #1e40af;
+  --sun: #fff300;
+  --surface: #ffffff;
+  --line: #dbe4f0;
+  --shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  --radius: 16px;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+}
+
 .section-page {
   padding: 40px 20px;
   display: flex;
   justify-content: center;
+  background: #f5f7fb;
+  min-height: 100vh;
+  font-family: var(--font-body);
 }
 
 .section-page__card {
   width: 100%;
-  max-width: 820px;
-  background-color: #ffffff;
-  border-radius: 16px;
+  max-width: 860px;
+  background-color: var(--surface);
+  border-radius: var(--radius);
   padding: 32px;
-  color: #0033A0;
-  box-shadow: 0 16px 40px rgba(0, 51, 160, 0.08);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .section-page__card h2 {
   margin: 0 0 10px 0;
   font-size: 24px;
+  font-family: var(--font-display);
 }
 
 .section-page__subtitle {
   margin: 0;
-  color: #5f6f9f;
+  color: var(--muted);
   font-size: 14px;
 }
 
 .section-page__note {
   margin-top: 16px;
   font-size: 13px;
-  color: #8a98c9;
+  color: #5b4c00;
+  background: var(--sun);
+  padding: 8px 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .section-page {
+    padding: 24px 16px;
+  }
+
+  .section-page__card {
+    padding: 20px;
+  }
 }
