@@ -25,7 +25,7 @@ function EstudianteDashboard() {
     if (storedMaterias) {
       setMaterias(JSON.parse(storedMaterias));
     } else {
-      setMaterias(['Matemáticas', 'Lengua', 'Ciencias']);
+      setMaterias(['Bases de datos,', 'Logica', 'Backend']);
     }
   }, []);
 
@@ -168,7 +168,6 @@ function EstudianteDashboard() {
                   <tr>
                     <th>Estudiante</th>
                     <th>Materia</th>
-                    <th>Clase</th>
                     <th>Estado</th>
                     <th>Fecha</th>
                     <th>Acciones</th>
@@ -179,7 +178,6 @@ function EstudianteDashboard() {
                     <tr key={asistencia.id}>
                       <td>{asistencia.estudianteNombre}</td>
                       <td>{asistencia.materiaNombre}</td>
-                      <td>{asistencia.claseNombre}</td>
                       <td>{asistencia.estado}</td>
                       <td>
                         {asistencia.fecha

@@ -5,11 +5,10 @@ const escapeCsv = (value) => {
 };
 
 export const exportarAsistenciasCSV = (asistencias) => {
-  const headers = ['Estudiante', 'Materia', 'Clase', 'Estado', 'Fecha'];
+  const headers = ['Estudiante', 'Materia', 'Estado', 'Fecha'];
   const rows = asistencias.map((a) => [
     a.estudianteNombre,
     a.materiaNombre,
-    a.claseNombre,
     a.estado,
     a.fecha
   ]);
@@ -36,7 +35,6 @@ export const exportarAsistenciasPDF = (asistencias) => {
       <tr>
         <td>${a.estudianteNombre || ''}</td>
         <td>${a.materiaNombre || ''}</td>
-        <td>${a.claseNombre || ''}</td>
         <td>${a.estado || ''}</td>
         <td>${a.fecha || ''}</td>
       </tr>`
@@ -62,7 +60,6 @@ export const exportarAsistenciasPDF = (asistencias) => {
             <tr>
               <th>Estudiante</th>
               <th>Materia</th>
-              <th>Clase</th>
               <th>Estado</th>
               <th>Fecha</th>
             </tr>

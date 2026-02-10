@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 const initialState = {
   estudianteNombre: '',
   materiaNombre: '',
-  claseNombre: '',
   estado: 'presente',
   fecha: ''
 };
@@ -16,7 +15,6 @@ const CrearAsistencia = ({ onGuardar, asistenciaEditando, cancelarEdicion }) => 
       setForm({
         estudianteNombre: asistenciaEditando.estudianteNombre || '',
         materiaNombre: asistenciaEditando.materiaNombre || '',
-        claseNombre: asistenciaEditando.claseNombre || '',
         estado: asistenciaEditando.estado || 'presente',
         fecha: asistenciaEditando.fecha ? asistenciaEditando.fecha.split('T')[0] : ''
       });
@@ -34,7 +32,6 @@ const CrearAsistencia = ({ onGuardar, asistenciaEditando, cancelarEdicion }) => 
       id: asistenciaEditando?.id || Date.now(),
       estudianteNombre: form.estudianteNombre.trim(),
       materiaNombre: form.materiaNombre.trim(),
-      claseNombre: form.claseNombre.trim(),
       estado: form.estado,
       fecha: form.fecha || new Date().toISOString()
     };
@@ -59,14 +56,6 @@ const CrearAsistencia = ({ onGuardar, asistenciaEditando, cancelarEdicion }) => 
         name="materiaNombre"
         placeholder="Materia"
         value={form.materiaNombre}
-        onChange={onChange}
-        required
-      />
-      <input
-        type="text"
-        name="claseNombre"
-        placeholder="Clase / Grupo"
-        value={form.claseNombre}
         onChange={onChange}
         required
       />
