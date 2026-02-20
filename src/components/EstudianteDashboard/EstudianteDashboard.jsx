@@ -25,7 +25,7 @@ function EstudianteDashboard() {
     if (storedMaterias) {
       setMaterias(JSON.parse(storedMaterias));
     } else {
-      setMaterias(['Bases de datos,', 'Logica', 'Backend']);
+      setMaterias(['Bases de datos', 'Lógica de programación', 'Backend']);
     }
   }, []);
 
@@ -90,6 +90,18 @@ function EstudianteDashboard() {
   const totalAsistencias = asistencias.length;
   const totalMaterias = materias.length;
   const totalFiltradas = asistenciasFiltradas.length;
+  const resolveEstado = (estado) => {
+    if (estado === 'presente') {
+      return { label: 'Asistió', className: 'status-pill is-ok' };
+    }
+    if (estado === 'tardanza') {
+      return { label: 'Tardanza', className: 'status-pill is-late' };
+    }
+    if (estado === 'justificado') {
+      return { label: 'Excusa', className: 'status-pill is-excuse' };
+    }
+    return { label: 'No asistió', className: 'status-pill is-miss' };
+  };
 
   return (
     <div className="dashboard-container">
@@ -147,11 +159,11 @@ function EstudianteDashboard() {
         </select>
 
         <div className="export-actions">
-          <button className="btn btn-outline" onClick={exportarCSV}>
+          <button className="btn outline" onClick={exportarCSV}>
             Exportar CSV
           </button>
 
-          <button className="btn btn-outline" onClick={exportarPDF}>
+          <button className="btn outline" onClick={exportarPDF}>
             Exportar PDF
           </button>
         </div>
@@ -159,7 +171,9 @@ function EstudianteDashboard() {
 
       <div className="dashboard-card">
         {asistenciasFiltradas.length === 0 ? (
-          <p>No hay asistencias registradas.</p>
+          <p role="status" aria-live="polite">
+            No hay asistencias registradas.
+          </p>
         ) : (
           <>
             <div className="table-container">
@@ -174,11 +188,15 @@ function EstudianteDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {asistenciasPaginadas.map((asistencia) => (
-                    <tr key={asistencia.id}>
-                      <td>{asistencia.estudianteNombre}</td>
-                      <td>{asistencia.materiaNombre}</td>
-                      <td>{asistencia.estado}</td>
+                  {asistenciasPaginadas.map((asistencia) => {
+                    const estado = resolveEstado(asistencia.estado);
+                    return (
+                      <tr key={asistencia.id}>
+                        <td>{asistencia.estudianteNombre}</td>
+                        <td>{asistencia.materiaNombre}</td>
+                        <td>
+                          <span className={estado.className}>{estado.label}</span>
+                        </td>
                       <td>
                         {asistencia.fecha
                           ? new Date(asistencia.fecha).toLocaleDateString('es-CO')
@@ -186,20 +204,21 @@ function EstudianteDashboard() {
                       </td>
                       <td>
                         <button
-                          className="btn btn-outline"
+                          className="btn outline"
                           onClick={() => setAsistenciaEditando(asistencia)}
                         >
                           Editar
                         </button>
                         <button
-                          className="btn btn-outline"
+                          className="btn outline"
                           onClick={() => eliminarAsistencia(asistencia.id)}
                         >
                           Eliminar
                         </button>
                       </td>
-                    </tr>
-                  ))}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

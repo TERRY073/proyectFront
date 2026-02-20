@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import "./MiAsistencia.css";
 
 const MiAsistencia = () => {
@@ -27,12 +27,12 @@ const MiAsistencia = () => {
 
   const getEstadoBadge = (estado) => {
     const badges = {
-      presente: { text: "Presente", className: "badge-presente" },
-      ausente: { text: "Ausente", className: "badge-ausente" },
-      tardanza: { text: "Tardanza", className: "badge-tardanza" },
-      justificado: { text: "Justificado", className: "badge-justificado" }
+      presente: { text: "Presente", className: "status-pill is-ok" },
+      ausente: { text: "Ausente", className: "status-pill is-miss" },
+      tardanza: { text: "Tardanza", className: "status-pill is-late" },
+      justificado: { text: "Excusa", className: "status-pill is-excuse" }
     };
-    return badges[estado] || { text: estado, className: "badge-default" };
+    return badges[estado] || { text: estado, className: "status-pill" };
   };
 
   const formatearFecha = (fechaStr) => {
@@ -168,7 +168,10 @@ const MiAsistencia = () => {
 
         {asistencias.length === 0 ? (
           <div className="empty-state">
-            <p>No hay registros de asistencia para los filtros seleccionados</p>
+            <p>No hay registros de asistencia para los filtros seleccionados.</p>
+            <p className="empty-hint">
+              Cambia los filtros o espera al siguiente registro.
+            </p>
           </div>
         ) : (
           <div className="tabla-container">
@@ -195,9 +198,7 @@ const MiAsistencia = () => {
                       <td className="codigo">{asistencia.cursoCodigo}</td>
                       <td>{asistencia.horaEntrada || "-"}</td>
                       <td>
-                        <span className={`estado-badge ${badge.className}`}>
-                          {badge.text}
-                        </span>
+                        <span className={badge.className}>{badge.text}</span>
                       </td>
                       <td className="observaciones">
                         {asistencia.observaciones || "-"}

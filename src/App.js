@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import './App.css';
 import Home from './pages/Home';
 import Register from './components/Register/Register';
 import TomarAsistencia from './components/Tomarasistencia/Tomarasistencia';

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../App.css';
 import LogoSura from '../assets/LogoSura.svg';
 
 const Home = () => {
@@ -11,22 +10,27 @@ const Home = () => {
   const [view, setView] = useState('inicio');
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const roleCardRef = useRef(null);
+  const contentRef = useRef(null);
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
 
   const [asistencias, setAsistencias] = useState([]);
   const [profesorTab, setProfesorTab] = useState('ver');
+  const [asistenciaEditando, setAsistenciaEditando] = useState(null);
   const [formProfesor, setFormProfesor] = useState({
     estudiante: '',
     materia: '',
     materiaOtro: '',
     dia: '',
-    asistio: false
+    asistio: false,
+    excusa: false,
+    anotaciones: ''
   });
   const [filtrosEstudiante, setFiltrosEstudiante] = useState({
     dia: '',
     materia: ''
   });
+  const [filtroProfesorMateria, setFiltroProfesorMateria] = useState('');
   const isAdmin = activeRole === 'profesor';
 
   useEffect(() => {
@@ -74,6 +78,20 @@ const Home = () => {
     });
   }, [asistencias, filtrosEstudiante]);
 
+  const materiasProfesor = useMemo(() => {
+    const materias = asistencias
+      .map((item) => item.materia)
+      .filter((materia) => Boolean(materia));
+    return Array.from(new Set(materias));
+  }, [asistencias]);
+
+  const asistenciasProfesorFiltradas = useMemo(() => {
+    return asistencias.filter((item) => {
+      if (!filtroProfesorMateria) return true;
+      return item.materia === filtroProfesorMateria;
+    });
+  }, [asistencias, filtroProfesorMateria]);
+
   const handleRoleSelect = (rol) => {
     setSelectedRole(rol);
     setRolePanel((prev) => (prev === rol ? '' : rol));
@@ -86,7 +104,7 @@ const Home = () => {
 
   const handleLogin = () => {
     if (!selectedRole) {
-      setError('Selecciona un rol en "Elegir rol" para iniciar sesión.');
+      setError('Selecciona un rol en "Elegir rol" para continuar.');
       return;
     }
     setActiveRole(selectedRole);
@@ -95,6 +113,9 @@ const Home = () => {
     setError('');
     setMensaje(`Sesión iniciada como ${selectedRole}.`);
     setRoleDropdownOpen(false);
+    setTimeout(() => {
+      contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
     setTimeout(() => setMensaje(''), 2500);
   };
 
@@ -116,6 +137,23 @@ const Home = () => {
     }));
   };
 
+  const handleToggleAsistio = () => {
+    setFormProfesor((prev) => ({
+      ...prev,
+      asistio: !prev.asistio,
+      excusa: prev.asistio ? prev.excusa : false
+    }));
+  };
+
+  const handleToggleExcusa = () => {
+    setFormProfesor((prev) => ({
+      ...prev,
+      excusa: !prev.excusa,
+      asistio: false,
+      anotaciones: prev.excusa ? '' : prev.anotaciones
+    }));
+  };
+
   const guardarAsistenciaLocal = (e) => {
     e.preventDefault();
     const materiaFinal =
@@ -128,21 +166,101 @@ const Home = () => {
       return;
     }
     const nueva = {
-      id: Date.now(),
-      ...formProfesor
+      id: asistenciaEditando?.id || Date.now(),
+      ...formProfesor,
+      materia: materiaFinal
     };
-    nueva.materia = materiaFinal;
-    setAsistencias((prev) => [nueva, ...prev]);
+
+    setAsistencias((prev) => {
+      if (!asistenciaEditando) return [nueva, ...prev];
+      return prev.map((item) => (item.id === asistenciaEditando.id ? nueva : item));
+    });
+
+    setAsistenciaEditando(null);
     setFormProfesor({
       estudiante: '',
       materia: '',
       materiaOtro: '',
       dia: '',
-      asistio: false
+      asistio: false,
+      excusa: false,
+      anotaciones: ''
     });
     setError('');
-    setMensaje('Asistencia registrada localmente.');
+    setMensaje(
+      asistenciaEditando
+        ? 'Asistencia actualizada correctamente.'
+        : 'Asistencia registrada localmente.'
+    );
     setTimeout(() => setMensaje(''), 2500);
+  };
+
+  const handleEditarAsistencia = (item) => {
+    setProfesorTab('asignar');
+    setAsistenciaEditando(item);
+    setFormProfesor({
+      estudiante: item.estudiante || '',
+      materia: item.materia || '',
+      materiaOtro: '',
+      dia: item.dia || '',
+      asistio: Boolean(item.asistio),
+      excusa: Boolean(item.excusa),
+      anotaciones: item.anotaciones || ''
+    });
+  };
+
+  const handleDropdownToggle = (event) => {
+    const detail = event.currentTarget;
+    if (!detail.open) return;
+    const summary = detail.querySelector('summary');
+    if (!summary) return;
+
+    const rect = summary.getBoundingClientRect();
+    const mid = rect.left + rect.width / 2;
+    const width = window.innerWidth;
+
+    detail.classList.remove('align-left', 'align-right', 'align-center');
+    if (mid < width * 0.33) {
+      detail.classList.add('align-right');
+    } else if (mid > width * 0.66) {
+      detail.classList.add('align-left');
+    } else {
+      detail.classList.add('align-center');
+    }
+  };
+
+  const closeDropdown = (event) => {
+    const detail = event.currentTarget.closest('details');
+    if (detail?.hasAttribute('open')) {
+      detail.removeAttribute('open');
+    }
+  };
+
+  const gotoAsistencias = () => {
+    if (!activeRole) {
+      setError('Debes elegir un rol para ver asistencias.');
+      setRoleDropdownOpen(true);
+      roleCardRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      return;
+    }
+    setView('asistencias');
+    setError('');
+    setTimeout(() => {
+      contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
+  const resolveEstado = (item) => {
+    if (item.asistio) {
+      return { label: 'Asistió', className: 'status-pill is-ok' };
+    }
+    if (item.excusa) {
+      return { label: 'Excusa', className: 'status-pill is-excuse' };
+    }
+    return { label: 'No asistió', className: 'status-pill is-miss' };
   };
 
   return (
@@ -167,25 +285,73 @@ const Home = () => {
           </div>
         </Link>
         <nav className="top-actions">
-          <details className="dropdown menu-dropdown">
+          <details className="dropdown menu-dropdown" onToggle={handleDropdownToggle}>
             <summary>Menú</summary>
             <div className="dropdown-menu">
-              <button type="button" className="btn outline" disabled={!isAdmin}>
+              <button
+                type="button"
+                className="btn outline"
+                disabled={!isAdmin}
+                onClick={(event) => {
+                  closeDropdown(event);
+                  navigate('/modulos/usuarios');
+                }}
+              >
                 Usuarios
               </button>
-              <button type="button" className="btn outline" disabled={!isAdmin}>
+              <button
+                type="button"
+                className="btn outline"
+                disabled={!isAdmin}
+                onClick={(event) => {
+                  closeDropdown(event);
+                  navigate('/modulos/profesor');
+                }}
+              >
                 Profesor
               </button>
-              <button type="button" className="btn outline" disabled={!isAdmin}>
+              <button
+                type="button"
+                className="btn outline"
+                disabled={!isAdmin}
+                onClick={(event) => {
+                  closeDropdown(event);
+                  navigate('/profesor/mis-clases');
+                }}
+              >
                 Curso
               </button>
-              <button type="button" className="btn outline" disabled={!isAdmin}>
+              <button
+                type="button"
+                className="btn outline"
+                disabled={!isAdmin}
+                onClick={(event) => {
+                  closeDropdown(event);
+                  navigate('/admin/reportes-globales');
+                }}
+              >
                 Reporte
               </button>
-              <button type="button" className="btn outline" disabled={!isAdmin}>
+              <button
+                type="button"
+                className="btn outline"
+                disabled={!isAdmin}
+                onClick={(event) => {
+                  closeDropdown(event);
+                  navigate('/modulos/notificacion');
+                }}
+              >
                 Notificación
               </button>
-              <button type="button" className="btn outline" disabled={!isAdmin}>
+              <button
+                type="button"
+                className="btn outline"
+                disabled={!isAdmin}
+                onClick={(event) => {
+                  closeDropdown(event);
+                  navigate('/modulos/matricula');
+                }}
+              >
                 Matrícula
               </button>
             </div>
@@ -205,16 +371,13 @@ const Home = () => {
             <button
               type="button"
               className="btn outline"
-              onClick={() => {
-                setView('asistencias');
-                setError('');
-              }}
+              onClick={gotoAsistencias}
             >
               Asistencias registradas
             </button>
           )}
           {activeRole ? (
-            <details className="dropdown user-dropdown">
+            <details className="dropdown user-dropdown" onToggle={handleDropdownToggle}>
               <summary>{`Sesión: ${activeRole}`}</summary>
               <div className="dropdown-menu">
                 <button type="button" className="btn outline" onClick={handleLogout}>
@@ -235,57 +398,82 @@ const Home = () => {
 
       <section className="hero-row">
         <div className="hero-copy">
-          <p className="hero-kicker">Panel de asistencia</p>
-          <h1>Visibilidad clara para docentes y estudiantes.</h1>
+          <p className="hero-kicker">Gestión diaria</p>
+          <h1>Asistencia simple para equipos académicos.</h1>
           <p>
-            Registra, consulta y da seguimiento a la asistencia con filtros
-            simples y una experiencia lista para integrarse a tus módulos.
+            Registra la presencia, gestiona excusas y consulta historiales en un
+            flujo claro y rápido para profesores y estudiantes.
           </p>
           <div className="hero-actions">
-            <button
-              type="button"
-              className="btn primary"
-              onClick={() => {
-                if (!activeRole) {
-                  setError('Debes iniciar sesión para ver asistencias.');
-                  return;
-                }
-                setView('asistencias');
-                setError('');
-              }}
-            >
+            <button type="button" className="btn primary" onClick={gotoAsistencias}>
               Ver asistencias
             </button>
-            <button type="button" className="btn outline">
-              Explorar módulos
+            <button
+              type="button"
+              className="btn outline"
+              onClick={() =>
+                document.getElementById('resumen-diario')?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                })
+              }
+            >
+              Ver resumen diario
             </button>
           </div>
-          <div className="hero-stats">
-            <div>
-              <span>Flujo</span>
-              <strong>Por rol</strong>
+          <div className="hero-stats" aria-label="Resumen diario">
+            <div className="hero-stat">
+              <div className="hero-icon">
+                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2">
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <span>Estado</span>
+                <strong>Actualizado</strong>
+              </div>
             </div>
-            <div>
-              <span>Consulta</span>
-              <strong>Rápida</strong>
+            <div className="hero-stat">
+              <div className="hero-icon alt">
+                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2">
+                  <path d="M12 8v4l3 3" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+              </div>
+              <div>
+                <span>Seguimiento</span>
+                <strong>Diario</strong>
+              </div>
             </div>
-            <div>
-              <span>Integración</span>
-              <strong>Lista</strong>
+            <div className="hero-stat">
+              <div className="hero-icon warn">
+                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2">
+                  <path d="M12 9v4" />
+                  <path d="M12 17h.01" />
+                  <path d="M4 20h16L12 4 4 20z" />
+                </svg>
+              </div>
+              <div>
+                <span>Soporte</span>
+                <strong>Excusas</strong>
+              </div>
             </div>
           </div>
         </div>
         <aside className="role-card" ref={roleCardRef}>
-          <p className="role-title">Acceso por rol</p>
+          <p className="role-title">Acceso rápido</p>
           <p className="role-subtitle">
             {activeRole
               ? `Sesión activa: ${activeRole}.`
-              : 'Elige tu perfil y luego inicia sesión.'}
+              : 'Elige tu perfil y entra al módulo.'}
           </p>
           <details
             className="dropdown role-dropdown"
             open={roleDropdownOpen}
-            onToggle={(event) => setRoleDropdownOpen(event.currentTarget.open)}
+            onToggle={(event) => {
+              setRoleDropdownOpen(event.currentTarget.open);
+              handleDropdownToggle(event);
+            }}
           >
             <summary>Elegir rol</summary>
             <div className="dropdown-menu">
@@ -298,7 +486,7 @@ const Home = () => {
               </button>
               {rolePanel === 'estudiante' && (
                 <button type="button" className="btn primary" onClick={handleLogin}>
-                  Iniciar sesión como estudiante
+                  Entrar como estudiante
                 </button>
               )}
               <button
@@ -310,7 +498,7 @@ const Home = () => {
               </button>
               {rolePanel === 'profesor' && (
                 <button type="button" className="btn primary" onClick={handleLogin}>
-                  Iniciar sesión como profesor
+                  Entrar como profesor
                 </button>
               )}
             </div>
@@ -323,48 +511,39 @@ const Home = () => {
         </aside>
       </section>
 
-      <section className="info-grid">
+      <section className="info-grid" id="resumen-diario">
         <article className="info-card highlight-card">
-          <h3>Asistencia con enfoque humano</h3>
+          <h3>Registro en un solo lugar</h3>
           <p>
-            Diseñado para equipos académicos que buscan claridad, orden y
-            continuidad en el acompañamiento educativo.
+            Marca asistencia, registra excusas y agrega anotaciones sin salir del
+            módulo.
           </p>
           <div className="highlight-metrics">
             <div className="metric">
-              <span>Enfoque</span>
-              <strong>Seguimiento real</strong>
+              <span>Profesores</span>
+              <strong>Registro rápido</strong>
             </div>
             <div className="metric">
-              <span>Objetivo</span>
-              <strong>Mejorar permanencia</strong>
+              <span>Estudiantes</span>
+              <strong>Historial claro</strong>
             </div>
             <div className="metric">
-              <span>Uso</span>
-              <strong>Simple y directo</strong>
+              <span>Coordinación</span>
+              <strong>Vista diaria</strong>
             </div>
           </div>
         </article>
         <article className="info-card">
-          <h3>Educación con propósito</h3>
-          <p>
-            Fundación SURA promueve la calidad de la educación y el desarrollo de
-            capacidades en directivos, docentes y estudiantes.
-          </p>
+          <h3>Alertas y seguimiento</h3>
+          <p>Identifica ausencias recurrentes y actúa con tiempo.</p>
         </article>
         <article className="info-card">
-          <h3>Innovación en aula</h3>
-          <p>
-            Iniciativas como Félix y Susana y Cuantrix hacen parte de la línea
-            educativa y acompañan procesos en instituciones educativas.
-          </p>
+          <h3>Excusas y notas</h3>
+          <p>Adjunta observaciones para que todo el equipo tenga contexto.</p>
         </article>
         <article className="info-card">
-          <h3>Continuidad y mejora</h3>
-          <p>
-            Edúcate con SURA ofrece rutas de aprendizaje y recursos para fortalecer
-            prácticas formativas y de bienestar.
-          </p>
+          <h3>Consulta inmediata</h3>
+          <p>Filtra por materia y día para encontrar lo que necesitas.</p>
         </article>
       </section>
 
@@ -376,7 +555,7 @@ const Home = () => {
             </svg>
           </div>
           <h4>Registro confiable</h4>
-          <p>Reduce errores manuales y facilita la trazabilidad por materia.</p>
+          <p>Menos pasos, más claridad en cada clase.</p>
         </article>
         <article className="benefit">
           <div className="benefit-icon" aria-hidden="true">
@@ -385,7 +564,7 @@ const Home = () => {
             </svg>
           </div>
           <h4>Consulta rápida</h4>
-          <p>Filtros por día y materia para ver solo lo necesario.</p>
+          <p>Encuentra registros con filtros simples.</p>
         </article>
         <article className="benefit">
           <div className="benefit-icon" aria-hidden="true">
@@ -393,14 +572,22 @@ const Home = () => {
               <path d="M12 3v18M3 12h18" />
             </svg>
           </div>
-          <h4>Integración sencilla</h4>
-          <p>Estructura lista para conectarse con APIs y módulos externos.</p>
+          <h4>Contexto completo</h4>
+          <p>Excusas y anotaciones disponibles cuando se necesitan.</p>
         </article>
       </section>
 
-      <main className="content">
-        {mensaje && <div className="alert success">{mensaje}</div>}
-        {error && <div className="alert error">{error}</div>}
+      <main className="content" ref={contentRef}>
+        {mensaje && (
+          <div className="alert success" role="status" aria-live="polite">
+            {mensaje}
+          </div>
+        )}
+        {error && (
+          <div className="alert error" role="alert">
+            {error}
+          </div>
+        )}
 
         {activeRole && view === 'asistencias' && (
           <section className="modules">
@@ -463,7 +650,7 @@ const Home = () => {
                             <th>Estudiante</th>
                             <th>Materia</th>
                             <th>Día</th>
-                            <th>Asistió</th>
+                            <th>Estado</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -471,17 +658,27 @@ const Home = () => {
                               <tr>
                                 <td colSpan="4" className="empty">
                                   No hay asistencias registradas.
+                                  <div className="empty-hint">
+                                    Registra la primera asistencia para comenzar.
+                                  </div>
                                 </td>
                               </tr>
                             ) : (
-                              asistenciasFiltradas.map((item) => (
-                                <tr key={item.id}>
-                                  <td>{item.estudiante}</td>
-                                  <td>{item.materia}</td>
-                                  <td>{item.dia}</td>
-                                  <td>{item.asistio ? 'Sí' : 'No'}</td>
-                                </tr>
-                            ))
+                              asistenciasFiltradas.map((item) => {
+                                const estado = resolveEstado(item);
+                                return (
+                                  <tr key={item.id}>
+                                    <td>{item.estudiante}</td>
+                                    <td>{item.materia}</td>
+                                    <td>{item.dia}</td>
+                                    <td>
+                                      <span className={estado.className}>
+                                        {estado.label}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                );
+                              })
                           )}
                         </tbody>
                       </table>
@@ -498,7 +695,7 @@ const Home = () => {
                   <p>Gestiona asistencias de tus materias.</p>
                 </header>
                 <div className="module-actions">
-                  <details className="dropdown">
+                  <details className="dropdown" onToggle={handleDropdownToggle}>
                     <summary>Acciones</summary>
                     <div className="dropdown-menu">
                       <button
@@ -506,14 +703,20 @@ const Home = () => {
                         className={`btn primary ${
                           profesorTab === 'asignar' ? 'active' : ''
                         }`}
-                        onClick={() => setProfesorTab('asignar')}
+                        onClick={(event) => {
+                          closeDropdown(event);
+                          setProfesorTab('asignar');
+                        }}
                       >
                         Asignar asistencia
                       </button>
                       <button
                         type="button"
                         className={`btn outline ${profesorTab === 'ver' ? 'active' : ''}`}
-                        onClick={() => setProfesorTab('ver')}
+                        onClick={(event) => {
+                          closeDropdown(event);
+                          setProfesorTab('ver');
+                        }}
                       >
                         Ver asistencias
                       </button>
@@ -524,7 +727,11 @@ const Home = () => {
                 {profesorTab === 'asignar' ? (
                   <div className="module-body">
                     <section className="card">
-                      <h3>Registrar asistencia (local)</h3>
+                      <h3>
+                        {asistenciaEditando
+                          ? 'Editar asistencia (local)'
+                          : 'Registrar asistencia (local)'}
+                      </h3>
                       <form className="form" onSubmit={guardarAsistenciaLocal}>
                         <label>
                           Estudiante
@@ -579,18 +786,82 @@ const Home = () => {
                             placeholder="Ej: Lunes"
                           />
                         </label>
-                        <label className="checkbox">
-                          <input
-                            type="checkbox"
-                            name="asistio"
-                            checked={formProfesor.asistio}
-                            onChange={handleChangeProfesor}
-                          />
-                          Asistió
-                        </label>
+                        <div className="status-field">
+                          <span className="status-label">Estado</span>
+                          <div className="status-actions">
+                            <button
+                              type="button"
+                              className={`status-btn ${
+                                formProfesor.asistio ? 'active' : ''
+                              }`}
+                              onClick={handleToggleAsistio}
+                            >
+                              Asistió
+                            </button>
+                            <button
+                              type="button"
+                              className={`status-btn ${
+                                !formProfesor.asistio && !formProfesor.excusa
+                                  ? 'active'
+                                  : ''
+                              }`}
+                              onClick={() =>
+                                setFormProfesor((prev) => ({
+                                  ...prev,
+                                  asistio: false,
+                                  excusa: false,
+                                  anotaciones: ''
+                                }))
+                              }
+                            >
+                              No asistió
+                            </button>
+                            <button
+                              type="button"
+                              className={`status-btn ${
+                                formProfesor.excusa ? 'active' : ''
+                              }`}
+                              onClick={handleToggleExcusa}
+                            >
+                              Excusa
+                            </button>
+                          </div>
+                        </div>
+                        {formProfesor.excusa && (
+                          <label>
+                            Anotaciones
+                            <textarea
+                              name="anotaciones"
+                              value={formProfesor.anotaciones}
+                              onChange={handleChangeProfesor}
+                              placeholder="Agrega el motivo o soporte de la excusa"
+                              rows={3}
+                            />
+                          </label>
+                        )}
                         <button type="submit" className="btn primary">
-                          Guardar asistencia
+                          {asistenciaEditando ? 'Guardar cambios' : 'Guardar asistencia'}
                         </button>
+                        {asistenciaEditando && (
+                          <button
+                            type="button"
+                            className="btn outline"
+                            onClick={() => {
+                              setAsistenciaEditando(null);
+                              setFormProfesor({
+                                estudiante: '',
+                                materia: '',
+                                materiaOtro: '',
+                                dia: '',
+                                asistio: false,
+                                excusa: false,
+                                anotaciones: ''
+                              });
+                            }}
+                          >
+                            Cancelar edición
+                          </button>
+                        )}
                       </form>
                     </section>
                   </div>
@@ -598,6 +869,22 @@ const Home = () => {
                   <div className="module-body">
                     <section className="card">
                       <h3>Asistencias registradas</h3>
+                      <div className="filters">
+                        <label>
+                          Materia
+                          <select
+                            value={filtroProfesorMateria}
+                            onChange={(e) => setFiltroProfesorMateria(e.target.value)}
+                          >
+                            <option value="">Todas</option>
+                            {materiasProfesor.map((materia) => (
+                              <option key={materia} value={materia}>
+                                {materia}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      </div>
                       <div className="table-wrap">
                         <table>
                           <thead>
@@ -605,25 +892,47 @@ const Home = () => {
                               <th>Estudiante</th>
                               <th>Materia</th>
                               <th>Día</th>
-                              <th>Asistió</th>
+                              <th>Estado</th>
+                              <th>Anotaciones</th>
+                              <th>Acciones</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {asistencias.length === 0 ? (
+                            {asistenciasProfesorFiltradas.length === 0 ? (
                               <tr>
-                                <td colSpan="4" className="empty">
+                                <td colSpan="6" className="empty">
                                   No hay asistencias registradas.
+                                  <div className="empty-hint">
+                                    Usa “Asignar asistencia” para crear la primera.
+                                  </div>
                                 </td>
                               </tr>
                             ) : (
-                              asistencias.map((item) => (
-                                <tr key={item.id}>
-                                  <td>{item.estudiante}</td>
-                                  <td>{item.materia}</td>
-                                  <td>{item.dia}</td>
-                                  <td>{item.asistio ? 'Sí' : 'No'}</td>
-                                </tr>
-                              ))
+                              asistenciasProfesorFiltradas.map((item) => {
+                                const estado = resolveEstado(item);
+                                return (
+                                  <tr key={item.id}>
+                                    <td>{item.estudiante}</td>
+                                    <td>{item.materia}</td>
+                                    <td>{item.dia}</td>
+                                    <td>
+                                      <span className={estado.className}>
+                                        {estado.label}
+                                      </span>
+                                    </td>
+                                    <td>{item.anotaciones || '-'}</td>
+                                    <td>
+                                      <button
+                                        type="button"
+                                        className="btn outline"
+                                        onClick={() => handleEditarAsistencia(item)}
+                                      >
+                                        Editar
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })
                             )}
                           </tbody>
                         </table>

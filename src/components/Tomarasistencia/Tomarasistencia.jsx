@@ -173,12 +173,18 @@ const TomarAsistencia = () => {
       {/* ACCIONES RAPIDAS */}
       {cursoSeleccionado && estudiantes.length > 0 && (
         <div className="acciones-rapidas">
-          <h3>Acciones rapidas:</h3>
+          <h3>Acciones rápidas</h3>
           <div className="acciones-buttons">
-            <button className="btn-accion presente" onClick={() => marcarTodos('presente')}>
+            <button
+              className="btn btn-accion presente"
+              onClick={() => marcarTodos('presente')}
+            >
               Marcar todos presentes
             </button>
-            <button className="btn-accion ausente" onClick={() => marcarTodos('ausente')}>
+            <button
+              className="btn btn-accion ausente"
+              onClick={() => marcarTodos('ausente')}
+            >
               Marcar todos ausentes
             </button>
           </div>
@@ -207,6 +213,7 @@ const TomarAsistencia = () => {
                       }`}
                       onClick={() => cambiarEstado(estudiante.estudianteId, 'presente')}
                       title="Presente"
+                      aria-pressed={estudiante.estado === 'presente'}
                     >
                       P
                     </button>
@@ -216,6 +223,7 @@ const TomarAsistencia = () => {
                       }`}
                       onClick={() => cambiarEstado(estudiante.estudianteId, 'tardanza')}
                       title="Tardanza"
+                      aria-pressed={estudiante.estado === 'tardanza'}
                     >
                       T
                     </button>
@@ -225,6 +233,7 @@ const TomarAsistencia = () => {
                       }`}
                       onClick={() => cambiarEstado(estudiante.estudianteId, 'ausente')}
                       title="Ausente"
+                      aria-pressed={estudiante.estado === 'ausente'}
                     >
                       A
                     </button>
@@ -234,6 +243,7 @@ const TomarAsistencia = () => {
                       }`}
                       onClick={() => cambiarEstado(estudiante.estudianteId, 'justificado')}
                       title="Justificado"
+                      aria-pressed={estudiante.estado === 'justificado'}
                     >
                       J
                     </button>
@@ -254,18 +264,28 @@ const TomarAsistencia = () => {
 
           {/* BOTON GUARDAR */}
           <div className="guardar-section">
-            <button className="btn-guardar" onClick={guardarAsistencias}>
+            <button
+              className="btn primary btn-guardar"
+              onClick={guardarAsistencias}
+              disabled={estudiantes.length === 0}
+            >
               Guardar Asistencias
             </button>
           </div>
         </div>
       ) : cursoSeleccionado ? (
         <div className="empty-state">
-          <p>No hay estudiantes inscritos en este curso</p>
+          <p>No hay estudiantes inscritos en este curso.</p>
+          <p className="empty-hint">
+            Cambia de curso o actualiza la matrícula para comenzar.
+          </p>
         </div>
       ) : (
         <div className="empty-state">
-          <p>Selecciona un curso para comenzar</p>
+          <p>Selecciona un curso para comenzar.</p>
+          <p className="empty-hint">
+            Luego podrás marcar asistencia y registrar observaciones.
+          </p>
         </div>
       )}
     </div>

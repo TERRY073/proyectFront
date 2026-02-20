@@ -59,19 +59,50 @@ const CrearAsistencia = ({ onGuardar, asistenciaEditando, cancelarEdicion }) => 
         onChange={onChange}
         required
       />
-      <select name="estado" value={form.estado} onChange={onChange}>
-        <option value="presente">Presente</option>
-        <option value="ausente">Ausente</option>
-        <option value="tardanza">Tardanza</option>
-        <option value="justificado">Justificado</option>
-      </select>
+      <div className="status-field">
+        <span className="status-label">Estado</span>
+        <div className="status-actions">
+          <button
+            type="button"
+            className={`status-btn ${form.estado === 'presente' ? 'active' : ''}`}
+            onClick={() => setForm((prev) => ({ ...prev, estado: 'presente' }))}
+            aria-pressed={form.estado === 'presente'}
+          >
+            Presente
+          </button>
+          <button
+            type="button"
+            className={`status-btn ${form.estado === 'tardanza' ? 'active' : ''}`}
+            onClick={() => setForm((prev) => ({ ...prev, estado: 'tardanza' }))}
+            aria-pressed={form.estado === 'tardanza'}
+          >
+            Tardanza
+          </button>
+          <button
+            type="button"
+            className={`status-btn ${form.estado === 'ausente' ? 'active' : ''}`}
+            onClick={() => setForm((prev) => ({ ...prev, estado: 'ausente' }))}
+            aria-pressed={form.estado === 'ausente'}
+          >
+            Ausente
+          </button>
+          <button
+            type="button"
+            className={`status-btn ${form.estado === 'justificado' ? 'active' : ''}`}
+            onClick={() => setForm((prev) => ({ ...prev, estado: 'justificado' }))}
+            aria-pressed={form.estado === 'justificado'}
+          >
+            Excusa
+          </button>
+        </div>
+      </div>
       <input type="date" name="fecha" value={form.fecha} onChange={onChange} />
 
-      <button type="submit" className="btn btn-primary">
+      <button type="submit" className="btn primary">
         {asistenciaEditando ? 'Guardar cambios' : 'Guardar asistencia'}
       </button>
       {asistenciaEditando && (
-        <button type="button" className="btn btn-outline" onClick={cancelarEdicion}>
+        <button type="button" className="btn outline" onClick={cancelarEdicion}>
           Cancelar
         </button>
       )}
