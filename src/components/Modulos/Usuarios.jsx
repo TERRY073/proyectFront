@@ -6,7 +6,7 @@ const Usuarios = () => {
     <SectionPage
       title="Usuarios"
       subtitle="Administra perfiles, roles y accesos del sistema."
-      note="Módulo en construcción"
+      note="Módulo en preparación"
     />
   );
 };

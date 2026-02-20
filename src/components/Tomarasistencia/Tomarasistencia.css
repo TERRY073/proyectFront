@@ -87,6 +87,13 @@
   background-color: var(--surface-alt);
 }
 
+.campo-group select:focus,
+.campo-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+  outline: none;
+}
+
 .curso-info {
   display: flex;
   flex-wrap: wrap;
@@ -201,6 +208,10 @@
   margin: 0 0 20px 0;
 }
 
+.estudiantes-card .estudiantes-lista {
+  margin-top: 4px;
+}
+
 .estudiantes-lista {
   display: flex;
   flex-direction: column;
@@ -271,8 +282,8 @@
 }
 
 .btn-estado.tardanza.activo {
-  background-color: #fef3c7;
-  border-color: #fde68a;
+  background-color: #eef2ff;
+  border-color: #c9d4ee;
 }
 
 .btn-estado.ausente.activo {
@@ -281,8 +292,8 @@
 }
 
 .btn-estado.justificado.activo {
-  background-color: #fde68a;
-  border-color: #facc15;
+  background-color: #e7ecff;
+  border-color: #c9d4ee;
 }
 
 .observaciones-input {
@@ -293,6 +304,12 @@
   font-size: 13px;
   color: var(--ink);
   background-color: #ffffff;
+}
+
+.observaciones-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+  outline: none;
 }
 
 .guardar-section {

@@ -6,7 +6,7 @@ const Notificacion = () => {
     <SectionPage
       title="Notificación"
       subtitle="Envía avisos y recordatorios a tu comunidad educativa."
-      note="Módulo en construcción"
+      note="Módulo en preparación"
     />
   );
 };

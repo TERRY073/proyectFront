@@ -6,7 +6,7 @@ const Matricula = () => {
     <SectionPage
       title="Matrícula"
       subtitle="Administra inscripciones y estado académico."
-      note="Módulo en construcción"
+      note="Módulo en preparación"
     />
   );
 };

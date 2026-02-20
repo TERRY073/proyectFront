@@ -6,7 +6,7 @@ const Profesor = () => {
     <SectionPage
       title="Profesor"
       subtitle="Gestiona información docente, clases y actividades."
-      note="Módulo en construcción"
+      note="Módulo en preparación"
     />
   );
 };

@@ -6,7 +6,7 @@ const Reporte = () => {
     <SectionPage
       title="Reporte"
       subtitle="Consolida indicadores y reportes de asistencia."
-      note="Módulo en construcción"
+      note="Módulo en preparación"
     />
   );
 };

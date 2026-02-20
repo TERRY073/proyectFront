@@ -4,7 +4,7 @@ import './Navbar.css';
 import { useAuth } from '../../context/AuthContext';
 
 // Assets
-import LogoSura from '../../assets/LogoSura.svg';
+import LogoSura from '../../assets/LogoSura.png';
 
 const Navbar = () => {
   const navigate = useNavigate();

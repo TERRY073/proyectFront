@@ -13,7 +13,7 @@ import Cursoservice from './components/Curso/Cursoservice';
 import SectionPage from './components/Asistencia/SectionPage';
 
 const PlaceholderPage = ({ title, subtitle }) => (
-  <SectionPage title={title} subtitle={subtitle} note="Módulo en construcción" />
+  <SectionPage title={title} subtitle={subtitle} note="Módulo en preparación" />
 );
 
 function App() {

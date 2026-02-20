@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import LogoSura from '../assets/LogoSura.svg';
+import LogoSura from '../assets/LogoSura.png';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -24,7 +24,8 @@ const Home = () => {
     dia: '',
     asistio: false,
     excusa: false,
-    anotaciones: ''
+    anotaciones: '',
+    archivoExcusaNombre: ''
   });
   const [filtrosEstudiante, setFiltrosEstudiante] = useState({
     dia: '',
@@ -150,7 +151,16 @@ const Home = () => {
       ...prev,
       excusa: !prev.excusa,
       asistio: false,
-      anotaciones: prev.excusa ? '' : prev.anotaciones
+      anotaciones: prev.excusa ? '' : prev.anotaciones,
+      archivoExcusaNombre: prev.excusa ? '' : prev.archivoExcusaNombre
+    }));
+  };
+
+  const handleArchivoExcusa = (event) => {
+    const file = event.target.files?.[0];
+    setFormProfesor((prev) => ({
+      ...prev,
+      archivoExcusaNombre: file ? file.name : ''
     }));
   };
 
@@ -184,7 +194,8 @@ const Home = () => {
       dia: '',
       asistio: false,
       excusa: false,
-      anotaciones: ''
+      anotaciones: '',
+      archivoExcusaNombre: ''
     });
     setError('');
     setMensaje(
@@ -205,7 +216,8 @@ const Home = () => {
       dia: item.dia || '',
       asistio: Boolean(item.asistio),
       excusa: Boolean(item.excusa),
-      anotaciones: item.anotaciones || ''
+      anotaciones: item.anotaciones || '',
+      archivoExcusaNombre: item.archivoExcusaNombre || ''
     });
   };
 
@@ -839,6 +851,22 @@ const Home = () => {
                             />
                           </label>
                         )}
+                        {formProfesor.excusa && (
+                          <label>
+                            Soporte (archivo)
+                            <input
+                              type="file"
+                              name="archivoExcusa"
+                              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                              onChange={handleArchivoExcusa}
+                            />
+                            {formProfesor.archivoExcusaNombre && (
+                              <span className="file-hint">
+                                Archivo: {formProfesor.archivoExcusaNombre}
+                              </span>
+                            )}
+                          </label>
+                        )}
                         <button type="submit" className="btn primary">
                           {asistenciaEditando ? 'Guardar cambios' : 'Guardar asistencia'}
                         </button>
@@ -855,7 +883,8 @@ const Home = () => {
                                 dia: '',
                                 asistio: false,
                                 excusa: false,
-                                anotaciones: ''
+                                anotaciones: '',
+                                archivoExcusaNombre: ''
                               });
                             }}
                           >
@@ -894,13 +923,14 @@ const Home = () => {
                               <th>Día</th>
                               <th>Estado</th>
                               <th>Anotaciones</th>
+                              <th>Soporte</th>
                               <th>Acciones</th>
                             </tr>
                           </thead>
                           <tbody>
                             {asistenciasProfesorFiltradas.length === 0 ? (
                               <tr>
-                                <td colSpan="6" className="empty">
+                                <td colSpan="7" className="empty">
                                   No hay asistencias registradas.
                                   <div className="empty-hint">
                                     Usa “Asignar asistencia” para crear la primera.
@@ -921,6 +951,7 @@ const Home = () => {
                                       </span>
                                     </td>
                                     <td>{item.anotaciones || '-'}</td>
+                                    <td>{item.archivoExcusaNombre || '-'}</td>
                                     <td>
                                       <button
                                         type="button"

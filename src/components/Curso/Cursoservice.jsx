@@ -6,7 +6,7 @@ const Cursoservice = () => {
     <SectionPage
       title="Cursos"
       subtitle="Administra la oferta académica y la asignación de grupos."
-      note="Módulo en construcción"
+      note="Módulo en preparación"
     />
   );
 };

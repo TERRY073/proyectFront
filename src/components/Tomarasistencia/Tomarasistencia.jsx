@@ -89,7 +89,7 @@ const TomarAsistencia = () => {
         <div>
           <h1>Tomar Asistencia</h1>
           <p>Registra la asistencia de tus estudiantes</p>
-          <p className="page-note">Datos cargados desde API REST (pendiente).</p>
+          <p className="page-note">Datos cargados desde API REST (en progreso).</p>
         </div>
       </div>
 
